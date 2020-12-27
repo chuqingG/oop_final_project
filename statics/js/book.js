@@ -79,7 +79,7 @@ function listcur() {
         tr = $("<tr>")
         var td = $(`<td id = ${"CurrentBorrow"}></td>`)
             .addClass("mytd")
-            .text(hislist[i])
+            .text(curlist[i])
             .width("100%")
             .css("font-size", "12px")
             .css("background-color", "#ffffd9")

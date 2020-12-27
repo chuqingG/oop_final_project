@@ -95,3 +95,109 @@ def searchUser(username,uid,usertype,phone):
     if not curlist:
         curlist.append('None')
     return userlist,flag,hislist,curlist
+
+def confirmUser(username,uid):
+    userdf = pd.read_csv("data/user.csv")
+    userlist = []
+    hislist = []
+    curlist = []
+    if uid:
+        userdf = userdf[userdf.UserID == int(uid)]
+    if username:
+        userdf = userdf[userdf.Name == username]
+    for index, row in userdf.iterrows():
+        userlist.append(dict(row))
+    if(userdf.shape[0]==0):
+        flag = False
+    else:
+        flag = True
+        userdf.to_csv("data/curuser.csv",index=False,sep=',')
+        hislist = re.findall(r"@@(.+?)%%",userlist[0]['History'])
+        curlist = re.findall(r"@@(.+?)%%",userlist[0]['CurrentBorrow'])
+    if not hislist:
+        hislist.append('None')
+    if not curlist:
+        curlist.append('None')
+    return userlist,flag,hislist,curlist
+
+def borrowBook(bookname,isbn,author,booktag,publisher):
+    bookdf = pd.read_csv("data/book.csv")
+    bookdf2 = bookdf
+    userdf = pd.read_csv("data/user.csv")
+    curdf = pd.read_csv("data/curuser.csv")
+    booklist = []
+    hislist = []
+    curlist = []
+    if isbn:
+        bookdf = bookdf[bookdf.ISBN == isbn]
+    if author:
+        bookdf = bookdf[bookdf.Author == author]
+    if publisher:
+        bookdf = bookdf[bookdf.Publisher == publisher]
+    if booktag:
+        bookdf = bookdf[bookdf.Tag == booktag]
+    if bookname:
+        bookdf = bookdf[bookdf.Name == bookname]
+    for index, row in bookdf.iterrows():
+        booklist.append(dict(row))
+    if(curdf.shape[0]==0):
+        return booklist,2,hislist,curlist
+    if(bookdf.shape[0]==1):
+        if(bookdf.loc[bookdf.index[0],'Stock']==0):
+            return booklist,3,hislist,curlist
+        curlist = re.findall(r"@@(.+?)%%",curdf['CurrentBorrow'][0])
+        if((len(curlist)==4 and curdf['Type'][0]=='normal') or (len(curlist)==8 and curdf['Type'][0]=='vip')):
+            return booklist,4,hislist,curlist
+        bookdf2.loc[bookdf2[bookdf2.ISBN == bookdf.loc[bookdf.index[0],'ISBN']].index[0],'Stock'] = bookdf.loc[bookdf.index[0],'Stock'] - 1
+        bookdf2.to_csv("data/book.csv",index=False,sep=',')
+        userdf.loc[userdf[userdf.UserID == curdf['UserID'][0]].index[0],'CurrentBorrow'] = "@@" + bookdf.loc[bookdf.index[0],'Name'] + "%%" + curdf['CurrentBorrow'][0]
+        userdf.loc[userdf[userdf.UserID == curdf['UserID'][0]].index[0],'History'] = "@@" + bookdf.loc[bookdf.index[0],'Name'] + "%%" + curdf['History'][0]
+        curdf.loc[0,'CurrentBorrow'] = "@@" + bookdf.loc[bookdf.index[0],'Name'] + "%%" + curdf['CurrentBorrow'][0]
+        curdf.loc[0,'History'] = "@@" + bookdf.loc[bookdf.index[0],'Name'] + "%%" + curdf['History'][0]
+        curdf.to_csv("data/curuser.csv",index=False,sep=',')
+        userdf.to_csv("data/user.csv",index=False,sep=',')
+        hislist = re.findall(r"@@(.+?)%%",curdf.loc[0,'History'])
+        curlist = re.findall(r"@@(.+?)%%",curdf.loc[0,'CurrentBorrow'])
+        booklist[0]['Stock'] -= 1
+        return booklist,0,hislist,curlist
+    else:
+        return booklist,1,hislist,curlist
+
+def returnBook(bookname,isbn,author,booktag,publisher):
+    bookdf = pd.read_csv("data/book.csv")
+    bookdf2 = bookdf
+    userdf = pd.read_csv("data/user.csv")
+    curdf = pd.read_csv("data/curuser.csv")
+    booklist = []
+    hislist = []
+    curlist = []
+    if isbn:
+        bookdf = bookdf[bookdf.ISBN == isbn]
+    if author:
+        bookdf = bookdf[bookdf.Author == author]
+    if publisher:
+        bookdf = bookdf[bookdf.Publisher == publisher]
+    if booktag:
+        bookdf = bookdf[bookdf.Tag == booktag]
+    if bookname:
+        bookdf = bookdf[bookdf.Name == bookname]
+    for index, row in bookdf.iterrows():
+        booklist.append(dict(row))
+    if(curdf.shape[0]==0):
+        return booklist,2,hislist,curlist
+    if(bookdf.shape[0]==1):
+        curlist = re.findall(r"@@(.+?)%%",curdf.loc[0,'CurrentBorrow'])
+        if not bookdf.loc[bookdf.index[0],'Name'] in curlist:
+            return booklist,3,hislist,curlist
+        bookdf2.loc[bookdf2[bookdf2.ISBN == bookdf.loc[bookdf.index[0],'ISBN']].index[0],'Stock'] = bookdf.loc[bookdf.index[0],'Stock'] + 1
+        bookdf2.to_csv("data/book.csv",index=False,sep=',')
+        userdf.loc[userdf[userdf.UserID == curdf['UserID'][0]].index[0],'CurrentBorrow'] = userdf.loc[userdf[userdf.UserID == curdf['UserID'][0]].index[0],'CurrentBorrow'].replace("@@" + bookdf.loc[bookdf.index[0],'Name'] + "%%","",1)
+        curdf.loc[0,'CurrentBorrow'] = curdf.loc[0,'CurrentBorrow'].replace("@@" + bookdf.loc[bookdf.index[0],'Name'] + "%%","",1)
+        curdf.to_csv("data/curuser.csv",index=False,sep=',')
+        userdf.to_csv("data/user.csv",index=False,sep=',')
+        hislist = re.findall(r"@@(.+?)%%",curdf.loc[0,'History'])
+        curlist = re.findall(r"@@(.+?)%%",curdf.loc[0,'CurrentBorrow'])
+        booklist[0]['Stock'] += 1
+        return booklist,0,hislist,curlist
+    else:
+        return booklist,1,hislist,curlist

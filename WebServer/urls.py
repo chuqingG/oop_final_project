@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^mod_user$', views.mod_user, name='mod_user'),
     url(r'^search_user$', views.search_user, name='search_user'),
     url(r'^search_his$', views.search_his, name='search_his'),
-    
+    url(r'^user_confirm$', views.user_confirm, name='user_comfirm'),
+    url(r'^borrow_book$', views.borrow_book, name='borrow_book'),
+    url(r'^return_book$', views.return_book, name='return_book'),
     
 ]

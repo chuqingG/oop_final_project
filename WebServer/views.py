@@ -83,6 +83,12 @@ def search_user(request):
     userdf,flag,his,cur = user.searchUser(username,uid,usertype,phone)
     return JsonResponse({'userdf': userdf,'flag':flag})
 
+def user_confirm(request):
+    username = request.POST.get('username')
+    uid = request.POST.get('uid')
+    userdf,flag,his,cur = user.confirmUser(username,uid)
+    return JsonResponse({'userdf': userdf,'flag':flag,'hislist':his,'curlist':cur})
+
 def search_his(request):
     username = request.POST.get('username')
     print(username)
@@ -112,6 +118,25 @@ def search_book(request):
     bookdf = book.searchBook(bookname,isbn,author,booktag,publisher)
     return JsonResponse({'bookdf': bookdf})
 
+def borrow_book(request):
+    print("coming view")
+    bookname = request.POST.get('bookname')
+    isbn = request.POST.get('isbn')
+    author = request.POST.get('author')
+    booktag = request.POST.get('booktag')
+    publisher = request.POST.get('publisher')
+    bookdf,flag,his,cur = user.borrowBook(bookname,isbn,author,booktag,publisher)
+    return JsonResponse({'bookdf': bookdf,'flag':flag,'hislist':his,'curlist':cur})
+
+def return_book(request):
+    bookname = request.POST.get('bookname')
+    isbn = request.POST.get('isbn')
+    author = request.POST.get('author')
+    booktag = request.POST.get('booktag')
+    publisher = request.POST.get('publisher')
+    bookdf,flag,his,cur = user.returnBook(bookname,isbn,author,booktag,publisher)
+    return JsonResponse({'bookdf': bookdf,'flag':flag,'hislist':his,'curlist':cur})
+
 def inc_book(request):
     bookname = request.POST.get('bookname')
     isbn = request.POST.get('isbn')
@@ -132,74 +157,4 @@ def dec_book(request):
     bookdf,flag = book.decBook(bookname,isbn,author,booktag,publisher,stock)
     return JsonResponse({'bookdf': bookdf,'flag': flag})
 
-def open_file(request):
-    path = request.POST.get('path')
-    path = neobase.convert_path(path,
-                                settings.fuse_process.fuse_obj.root,
-                                settings.fuse_process.fuse_obj.mount_point)
-    ok = True
-    if not os.access(path, os.F_OK):
-        ok = False
-    os.system("nohup xdg-open {}".format(path))
-    return JsonResponse({'ok': ok})
 
-
-def rm_file(request):
-    path = request.POST.get('path')
-    path = neobase.convert_path(path,
-                                settings.fuse_process.fuse_obj.root,
-                                settings.fuse_process.fuse_obj.mount_point)
-    os.system("rm {}".format(path))
-    return find_files(request)
-
-
-def rm_node(request):
-    path = request.POST.get('path')
-    graph = Graph("bolt://localhost:7687")
-    ok = True
-    if not neobase.delete_file(graph, path):
-        ok = False
-    return JsonResponse({'ok': ok})
-
-
-def choose_dir(request):
-    root = tk.Tk()
-    root.withdraw()
-    path = filedialog.askdirectory()
-    root.destroy()
-    print(path)
-    return JsonResponse({'path': path})
-
-
-def add_files(request):
-    root = tk.Tk()
-    root.withdraw()
-    paths = filedialog.askopenfilenames()
-    root.destroy()
-    for path in paths:
-        full_path = os.path.realpath(settings.fuse_process.fuse_obj.mount_point + '/' + os.path.realpath(path))
-        print('\n\n', full_path, '\n\n')
-        os.makedirs(os.path.dirname(full_path))
-        os.system('cp {} {}'.format(path, full_path))
-
-    return JsonResponse({'paths': paths})
-
-
-def umount(request):
-    print(umount)
-    try:
-        if type(settings.fuse_process) == settings.FuseProcess:
-            settings.fuse_process.terminate()
-            os.system("umount {}".format(settings.fuse_process.mount_path))
-    except AttributeError:
-        pass
-    return render(request, 'home.html')
-
-
-def add_folder(request):
-    root = tk.Tk()
-    root.withdraw()
-    path = filedialog.askdirectory()
-    root.destroy()
-    os.system('cp -r {} {}'.format(path, settings.fuse_process.fuse_obj.mount_point))
-    return JsonResponse({'paths': path})
