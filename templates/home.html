@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Home</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <script src="../statics/js/jquery-3.5.1.js"></script>
+    	<link type="text/css" rel="stylesheet" href="../statics/css/main.css" />
+        <script>
+        $.ajaxSetup({
+            data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+        });
+        </script>
+    </head>
+    <body >
+        <!--div id="page-wrapper"-->
+            <section id="cta">
+                <h1>某不知名图书管理系统</h1>
+                <h3>选择登录方式</h3>
+                
+                <div class="row gtr-50 gtr-uniform">
+                    <div class="col-6 col-12-mobilep" >
+                        <form action="/admin">
+                        {% csrf_token %}
+                        <input type="submit" value="管理员"/>
+                        </form>
+                    </div>
+                    <div class="col-6 col-12-mobilep" >
+                        <form action="/reader">
+                        {% csrf_token %}
+                        <input type="submit" value="读者"/>
+                        </form>
+                    </div>
+                </div>
+                
+            </section>
+        <!--/div-->
+       
+        <script>
+        $("#chooseDirButton").click(function () {
+            $.ajax({
+                url: '/choose_dir',
+                type: 'post',
+                data: {
+                },
+                success: function (data) {
+                    console.log(data['path'])
+                    console.log($("#pathText"))
+                    $("#pathText").val(data['path'])
+                },
+            })
+        })
+        </script>
+
+    </body>
+</html>

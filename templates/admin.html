@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员界面</title>
+    <script src="../statics/js/jquery-3.5.1.js"></script>
+    <script src="../statics/js/book.js"></script>
+    <link type="text/css" href="../statics/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="../statics/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link type="text/css" href="../statics/css/theme.css" rel="stylesheet">
+    <link type="text/css" href="../statics/images/icons/css/font-awesome.css" rel="stylesheet">
+    <!--link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
+        rel='stylesheet'-->
+        
+    <script>
+    $.ajaxSetup({
+        data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+    });
+    $(function () {
+      $("body").height($(window).height());
+      $("body").width($(window).width());
+      $(window).resize(function () {
+        $("body").height($(window).height());
+        $("body").width($(window).width());
+      })
+    })
+    </script>
+
+  <style type="text/css">
+    .mytable{table-layout: fixed; background-color: #ffffd9; BORDER-COLLAPSE: collapse;}
+    .mytd{word-break: break-all; word-wrap: break-word;}
+    html, body {height: 100%; width: 100%;}
+  </style>
+</head>
+
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+            <i class="icon-reorder shaded"></i></a><a class="brand">管理员操作界面 </a>
+          
+          <!-- /.nav-collapse -->
+        </div>
+      </div>
+      <!-- /navbar-inner -->
+    </div>
+    <!-- /navbar -->
+  <!--顶栏卸载和添加-->
+<div class="wrapper">
+  <div class="container">
+  <div class="row">
+  <!--这三个div还没有结尾-->
+  <div class="span3 sidebar">
+  <div class="module">
+    <div class="module-head">
+      <h3>工具栏-书籍维护</h3>
+    </div>
+    <div class="module-body">
+  <table class="widget widget-menu unstyled" id="opTable">
+    <tr>
+      <td >
+        <table>
+          <tr><td >
+            <iframe id="submitFrame" style="display: none; width:100%; height:100%" name="submitFrame" src="about:blank"></iframe>
+          <!--导入书籍-->
+          <tr>
+            <td>
+              <input type="text" placeholder="导入信息路径：" id="importPath"/>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="button" class="pull-right btn btn-info" value="导入书籍" id="importBookButton"/>
+            </td>
+          </tr>
+          <!--增加书籍-->
+          <form id="inputForm" target="submitFrame"><fieldset>
+              {% csrf_token %}
+              
+              <table>
+                  <tr>
+                      <td>
+                        <input type="text" name="bookname" id="bookname" placeholder="Name" />
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="bookid" id="bookid" placeholder="BookID: 10 numbers"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="bookisbn" id="bookisbn" placeholder="ISBN:x-xx-xx-xx"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="publisher" id="publisher" placeholder="Publisher"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="date" id="date" placeholder="Date:YYYY-MM-DD"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="author" id="author" placeholder="Author"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="booktag" id="booktag" placeholder="Tag"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="stock" id="stock" placeholder="Stock (or num to change)"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <button id="incBookButton" class="pull-right btn  btn-info" onclick="return false;">书籍入库</button>
+                          <button id="decBookButton" class="pull-right btn  btn-info" onclick="return false;">书籍出库</button>
+                          <button id="searchBookButton" class="pull-right btn  btn-info" onclick="return false;">查询书籍</button>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <button id="addBookButton" class="pull-right btn  btn-info" onclick="return false;">添加书籍</button>
+                          <button id="delBookButton" class="pull-right btn  btn-info" onclick="return false;">删除书籍</button>
+                          <button id="modBookButton" class="pull-right btn  btn-info" onclick="return false;">修改书籍</button>
+                      </td>
+                  </tr>
+              </table>
+            </fieldset></form>
+          </td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  </div>
+  </div>
+  <!--end of module1-->
+<!--module2:读者信息-->
+<div class="module">
+    <div class="module-head">
+      <h3>工具栏-读者维护</h3>
+    </div>
+    <div class="module-body">
+  <table class="widget widget-menu unstyled" id="opTable">
+    <tr>
+      <td >
+        <table>
+          <tr><td >
+            <iframe id="submitFrame" style="display: none; width:100%; height:100%" name="submitFrame" src="about:blank"></iframe>
+          <!--导入书籍-->
+          <tr>
+            <td>
+              <input type="text" placeholder="导入信息路径：" id="importUserPath"/>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="button" class="pull-right btn btn-info" value="导入读者" id="importUserButton"/>
+            </td>
+          </tr>
+          <!--增加书籍-->
+          <form id="inputForm" target="submitFrame"><fieldset>
+              {% csrf_token %}
+              
+              <table>
+                  <tr>
+                      <td>
+                        <input type="text" name="username" id="username" placeholder="Name" />
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="uid" id="uid" placeholder="UserID: 10 numbers"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="usertype" id="usertype" placeholder="Type:vip/normal"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <input type="text" name="phone" id="phone" placeholder="Phone Number"/>
+                      </td>
+                  </tr>
+                  
+                  <tr>
+                      <td>
+                          <button id="searchHisButton" class="pull-right btn  btn-info" onclick="return false;">借阅信息</button>
+                          <button id="searchUserButton" class="pull-right btn  btn-info" onclick="return false;">查询读者</button>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <button id="addUserButton" class="pull-right btn  btn-info" onclick="return false;">添加读者</button>
+                          <button id="delUserButton" class="pull-right btn  btn-info" onclick="return false;">删除读者</button>
+                          <button id="modUserButton" class="pull-right btn  btn-info" onclick="return false;">修改读者</button>
+                      </td>
+                  </tr>
+              </table>
+            </fieldset></form>
+          </td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  </div>
+  </div>
+  <!--end of module2-->
+    </div>
+                            <!--end of span3-->
+  <!-- 查询文件列表表格 -->
+  <div class="span9">
+  <div class="content">
+  <!--module：书籍查询结果-->
+  <div class="module">
+    <div class="module-head">
+      <h3>书籍查询结果列表</h3>
+    </div>
+    <div class="module-body ">
+
+    <table class='table table-striped table-bordered table-condensed' style="BORDER-COLLAPSE: collapse" cellSpacing=1 cellPadding=0 border=0 style="width: 100%; height: 100%;">
+      <tr>
+        <td>
+          <table cellSpacing=1 cellPadding=0 width="100%" style="align-self: center; border: 1px;">
+              
+              <tr>
+                <td width="15%"  style="font-size: 16;">Name</td>
+                <td width="20%"  style="font-size: 16;">BookID</td>
+                <td width="10%" style="font-size: 16;">ISBN</td>
+                <td width="15%"  style="font-size: 16;">Publisher</td>
+                <td width="10%" style="font-size: 16;">Date</td>
+                <td width="10%" style="font-size: 16;">Author</td>
+                <td width="10%"  style="font-size: 16;">Tag</td>
+                <td width="10%"  style="font-size: 16;">Stock</td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <div style="OVERFLOW: auto; WIDTH: 100%; ">
+              <table style="BORDER-COLLAPSE: collapse" cellSpacing=1 cellPadding=0 width="100%" id="fileTable" class="mytable">
+              </table>
+            </div>
+        </td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+    </div>
+  </div>
+  <!--end of 查询结果module-->
+<!--module：书籍查询结果-->
+  <div class="module">
+    <div class="module-head">
+      <h3>读者查询结果列表</h3>
+    </div>
+    <div class="module-body ">
+
+    <table class='table table-striped table-bordered table-condensed' style="BORDER-COLLAPSE: collapse" cellSpacing=1 cellPadding=0 border=0 style="width: 100%; height: 100%;">
+      <tr>
+        <td>
+          <table cellSpacing=1 cellPadding=0 width="100%" style="align-self: center; border: 1px;">
+              
+              <tr>
+                <td width="25%"  style="font-size: 16;">Name</td>
+                <td width="25%"  style="font-size: 16;">UserID</td>
+                <td width="25%" style="font-size: 16;">Type</td>
+                <td width="25%"  style="font-size: 16;">PhoneNumber</td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <div style="OVERFLOW: auto; WIDTH: 100%; ">
+              <table style="BORDER-COLLAPSE: collapse" cellSpacing=1 cellPadding=0 width="100%" id="userTable" class="mytable">
+              </table>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table cellSpacing=1 cellPadding=0 width="100%" style="align-self: center; border: 1px;">
+              <tr>
+                <td width="100%"  style="font-size: 16;">当前借阅</td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <div style="OVERFLOW: auto; WIDTH: 100%; ">
+              <table style="BORDER-COLLAPSE: collapse" cellSpacing=1 cellPadding=0 width="100%" id="curTable" class="mytable">
+              </table>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table cellSpacing=1 cellPadding=0 width="100%" style="align-self: center; border: 1px;">
+              <tr>
+                <td width="100%"  style="font-size: 16;">借阅历史</td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <div style="OVERFLOW: auto; WIDTH: 100%; ">
+              <table style="BORDER-COLLAPSE: collapse" cellSpacing=1 cellPadding=0 width="100%" id="hisTable" class="mytable">
+              </table>
+            </div>
+        </td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+    </div>
+  </div>
+                            <!--/.module-->
+                        </div>
+                        <!--/.content-->
+                    </div>
+                    <!--/.span9-->
+                    
+                </div>
+                <!--row-->
+            </div>
+            <!--/.container-->
+        </div>
+        <!--/.wrapper-->
+        <div class="footer">
+            <div class="container">
+                <b class="copyright">&copy; PB18111688@chuqingG </b>All rights reserved.
+            </div>
+        </div>
+
+
+
+<!-- 导入数据  -->
+
+<script>
+$("#importBookButton").click(function () {
+    console.log($("#importPath").val())
+    $.ajax({
+        url: '/import_book',
+        type: 'post',
+        data: {
+          path: $("#importPath").val(),
+        },
+        success: function (data) {
+          booklist = data['bookdf']
+          console.log("import book")
+          listbook();
+        },
+    })
+})
+</script>
+
+<!-- 导入读者  -->
+<script>
+$("#importUserButton").click(function () {
+    console.log($("#importUserPath").val())
+    $.ajax({
+        url: '/import_user',
+        type: 'post',
+        data: {
+          path: $("#importUserPath").val(),
+        },
+        success: function (data) {
+          userlist = data['userdf']
+          console.log("import user")
+          listuser();
+        },
+    })
+})
+</script>
+
+<!-- 添加书籍 -->
+<script>
+$("#addBookButton").click(function () {
+    $.ajax({
+        url: '/add_book',
+        type: 'post',
+        data: {
+          bookname: $("#bookname").val(),
+          isbn: $("#bookisbn").val(),
+          author: $("#author").val(),
+          booktag: $("#booktag").val(),
+          publisher: $("#publisher").val(),
+          date: $("#date").val(),
+          bookid: $("#bookid").val(),
+          stock: $("#stock").val(),
+        },
+        success: function (data) {
+          booklist = data['bookdf']
+          listbook();
+        },
+    })
+})
+</script>
+
+<!-- 添加读者 -->
+<script>
+$("#addUserButton").click(function () {
+    $.ajax({
+        url: '/add_user',
+        type: 'post',
+        data: {
+          username: $("#username").val(),
+          uid: $("#uid").val(),
+          usertype: $("#usertype").val(),
+          phone: $("#phone").val(),
+        },
+        success: function (data) {
+          userlist = data['userdf']
+          console.log(userlist[0]['Name'])
+          console.log("adduser")
+          listuser();
+        },
+    })
+})
+</script>
+
+<!--删除书籍-->
+<script>
+$("#delBookButton").click(function () {
+    console.log("delete:")
+    console.log($("#bookname").val())
+    $.ajax({
+        url: '/del_book',
+        type: 'post',
+        data: {
+          bookname: $("#bookname").val(),
+        },
+        success: function (data) {
+          booklist = data['bookdf']
+          flag = data['flag']
+          bookname = $("#bookname").val()
+          if (flag==false)
+              alert(`${bookname}库存不为0\n无法删除\n`)
+          listbook();
+        },
+    })
+})
+</script>
+
+<!--删除读者-->
+<script>
+$("#delUserButton").click(function () {
+    console.log("delete:")
+    console.log($("#username").val())
+    $.ajax({
+        url: '/del_user',
+        type: 'post',
+        data: {
+          username: $("#username").val(),
+          uid: $("#uid").val(),
+          usertype: $("#usertype").val(),
+          phone: $("#phone").val(),
+        },
+        success: function (data) {
+          userlist = data['userdf']
+          flag = data['flag']
+          if (flag==false)
+              alert(`范围不止一个读者\n无法删除\n`)
+          listuser();
+        },
+    })
+})
+</script>
+
+<!--修改书籍信息-->
+<script>
+$("#modBookButton").click(function () {
+    $.ajax({
+        url: '/mod_book',
+        type: 'post',
+        data: {
+          bookname: $("#bookname").val(),
+          isbn: $("#bookisbn").val(),
+          author: $("#author").val(),
+          booktag: $("#booktag").val(),
+          publisher: $("#publisher").val(),
+          date: $("#date").val(),
+          bookid: $("#bookid").val(),
+        },
+        success: function (data) {
+          console.log("modify:")
+          console.log($("#bookname").val())
+          booklist = data['bookdf']
+          listbook();
+        },
+    })
+})
+</script>
+
+<!--修改读者-->
+<script>
+$("#modUserButton").click(function () {
+    $.ajax({
+        url: '/mod_user',
+        type: 'post',
+        data: {
+          username: $("#username").val(),
+          uid: $("#uid").val(),
+          usertype: $("#usertype").val(),
+          phone: $("#phone").val(),
+        },
+        success: function (data) {
+          userlist = data['userdf']
+          flag = data['flag']
+          if (flag==false)
+              alert(`没有给出待修改读者的uid\n无法修改\n`)
+          if(flag==true)
+              console.log("modify:")
+              console.log(userlist[0]['Name'])
+          listuser();
+        },
+    })
+})
+</script>
+
+<!--查找书籍-->
+<script>
+$("#searchBookButton").click(function () {
+    $.ajax({
+        url: '/search_book',
+        type: 'post',
+        data: {
+          bookname: $("#bookname").val(),
+          isbn: $("#bookisbn").val(),
+          author: $("#author").val(),
+          booktag: $("#booktag").val(),
+          publisher: $("#publisher").val(),
+        },
+        success: function (data) {
+          booklist = data['bookdf']
+          listbook();
+        },
+    })
+})
+</script>
+
+<!--查找读者-->
+<script>
+$("#searchUserButton").click(function () {
+    $.ajax({
+        url: '/search_user',
+        type: 'post',
+        data: {
+          username: $("#username").val(),
+          uid: $("#uid").val(),
+          usertype: $("#usertype").val(),
+          phone: $("#phone").val(),
+        },
+        success: function (data) {
+          userlist = data['userdf']
+          listuser();
+        },
+    })
+})
+</script>
+
+<!--借阅历史-->
+<script>
+$("#searchHisButton").click(function () {
+    console.log($("#username").val())
+    $.ajax({
+        url: '/search_his',
+        type: 'post',
+        data: {
+          username: $("#username").val(),
+          uid: $("#uid").val(),
+          usertype: $("#usertype").val(),
+          phone: $("#phone").val(),
+        },
+        success: function (data) {
+          userlist = data['userdf']
+          hislist = data['hislist']
+          curlist = data['curlist']
+          flag = data['flag']
+          if(flag==true)
+            console.log("search: "+userlist[0]['Name']+" history")
+            listuser();
+            listcur();
+            listhis();
+          if(flag==false)
+            alert(`不止一名读者\n无法展示借阅信息\n`)
+        },
+    })
+})
+</script>
+
+<!--书籍入库-->
+<script>
+$("#incBookButton").click(function () {
+    $.ajax({
+        url: '/inc_book',
+        type: 'post',
+        data: {
+          bookname: $("#bookname").val(),
+          isbn: $("#bookisbn").val(),
+          author: $("#author").val(),
+          booktag: $("#booktag").val(),
+          publisher: $("#publisher").val(),
+          stock:$("#stock").val(),
+        },
+        success: function (data) {
+          booklist = data['bookdf']
+          flag = data['flag']
+          if (flag==false)
+              alert(`筛选范围不止一本\n无法入库\n`)
+          if (flag==true)
+              alert(`${booklist[0]['Name']}入库${$("#stock").val()}本\n`)
+          listbook();
+        },
+    })
+})
+</script>
+
+<!--书籍出库-->
+<script>
+$("#decBookButton").click(function () {
+    $.ajax({
+        url: '/dec_book',
+        type: 'post',
+        data: {
+          bookname: $("#bookname").val(),
+          isbn: $("#bookisbn").val(),
+          author: $("#author").val(),
+          booktag: $("#booktag").val(),
+          publisher: $("#publisher").val(),
+          stock:$("#stock").val(),
+        },
+        success: function (data) {
+          booklist = data['bookdf']
+          flag = data['flag']
+          if (flag==2)
+              alert(`筛选范围不止一本\n无法出库\n`)
+          if (flag==1)
+              alert(`出库数量大于库存\n无法出库\n`)    
+          if (flag==0)
+              alert(`${booklist[0]['Name']}出库${$("#stock").val()}本\n`)
+          listbook();
+        },
+    })
+})
+</script>
+
+</body>
+      
+</html>
