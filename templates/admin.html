@@ -235,9 +235,9 @@
               
               <tr>
                 <td width="15%"  style="font-size: 16;">Name</td>
-                <td width="20%"  style="font-size: 16;">BookID</td>
+                <td width="15%"  style="font-size: 16;">BookID</td>
                 <td width="10%" style="font-size: 16;">ISBN</td>
-                <td width="15%"  style="font-size: 16;">Publisher</td>
+                <td width="20%"  style="font-size: 16;">Publisher</td>
                 <td width="10%" style="font-size: 16;">Date</td>
                 <td width="10%" style="font-size: 16;">Author</td>
                 <td width="10%"  style="font-size: 16;">Tag</td>
@@ -450,6 +450,8 @@ $("#delBookButton").click(function () {
           bookname = $("#bookname").val()
           if (flag==false)
               alert(`${bookname}库存不为0\n无法删除\n`)
+          if(flag==true)
+            alert(`删除${bookname}\n`)
           listbook();
         },
     })
@@ -473,8 +475,15 @@ $("#delUserButton").click(function () {
         success: function (data) {
           userlist = data['userdf']
           flag = data['flag']
+          uname = data['uname']
           if (flag==false)
               alert(`范围不止一个读者\n无法删除\n`)
+          if(flag==true)
+            alert(`删除${uname}\n`)
+          hislist=[]
+          curlist=[]
+          listcur();
+          listhis();
           listuser();
         },
     })
@@ -527,6 +536,10 @@ $("#modUserButton").click(function () {
               console.log("modify:")
               console.log(userlist[0]['Name'])
           listuser();
+          hislist=[]
+          curlist=[]
+          listcur();
+          listhis();
         },
     })
 })
@@ -568,6 +581,10 @@ $("#searchUserButton").click(function () {
         success: function (data) {
           userlist = data['userdf']
           listuser();
+          hislist=[]
+          curlist=[]
+          listcur();
+          listhis();
         },
     })
 })

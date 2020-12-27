@@ -10,6 +10,9 @@ def importUser(path):
     if not path:
         path = "data/user.csv"
     userdf = pd.read_csv(path)
+    userdf2 = pd.read_csv("data/user.csv")
+    userdf = pd.merge(userdf2, userdf, how='outer')
+    userdf.to_csv("data/user.csv",index=False,sep=',')
     userlist = []
     for index, row in userdf.iterrows():
         userlist.append(dict(row))
@@ -41,11 +44,11 @@ def delUser(username,uid,usertype,phone):
         for index, row in userdf.iterrows():
             userlist.append(dict(row))
         return userlist,False
-    userdf2  = userdf2.drop(userdf2[userdf2.UserID == userdf['UserID'][0]].index[0])
+    userdf2  = userdf2.drop(userdf2[userdf2.UserID == userdf.loc[userdf.index[0],'UserID']].index[0])
     userdf2.to_csv("data/user.csv",index=False,sep=',')
-    for index, row in userdf.iterrows():
+    for index, row in userdf2.iterrows():
         userlist.append(dict(row))
-    return userlist,True
+    return userdf.loc[userdf.index[0],'Name'],userlist,True
 
 def modUser(username,uid,usertype,phone):
     userdf = pd.read_csv("data/user.csv")

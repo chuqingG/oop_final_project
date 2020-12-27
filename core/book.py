@@ -10,6 +10,9 @@ def importBook(path):
     if not path:
         path = "data/book.csv"
     bookdf = pd.read_csv(path)
+    bookdf2 = pd.read_csv("data/book.csv")
+    bookdf = pd.merge(bookdf2, bookdf, how='outer')
+    bookdf.to_csv("data/book.csv",index=False,sep=',')
     booklist = []
     for index, row in bookdf.iterrows():
         booklist.append(dict(row))
@@ -94,10 +97,11 @@ def incBook(bookname,isbn,author,booktag,publisher,stock):
     if bookname:
         bookdf = bookdf[bookdf.Name == bookname]
     if(bookdf.shape[0]==1):
-        bookdf2.loc[bookdf2[bookdf2.ISBN == bookdf['ISBN'][0]].index[0],'Stock'] = int(stock) + bookdf['Stock'][0]
+        bookdf2.loc[bookdf2[bookdf2.ISBN == bookdf.loc[bookdf.index[0],'ISBN']].index[0],'Stock'] = int(stock) + bookdf.loc[bookdf.index[0],'Stock']
         bookdf2.to_csv("data/book.csv",index=False,sep=',')
         for index, row in bookdf.iterrows():
             booklist.append(dict(row))
+        booklist[0]['Stock'] += int(stock)
         return booklist,True
     else:
         for index, row in bookdf.iterrows():
@@ -121,10 +125,11 @@ def decBook(bookname,isbn,author,booktag,publisher,stock):
     for index, row in bookdf.iterrows():
         booklist.append(dict(row))
     if(bookdf.shape[0]==1):
-        if(int(stock) > bookdf['Stock'][0]):
+        if(int(stock) > bookdf.loc[bookdf.index[0],'Stock']):
             return booklist,1
-        bookdf2.loc[bookdf2[bookdf2.ISBN == bookdf['ISBN'][0]].index[0],'Stock'] = bookdf['Stock'][0] - int(stock)
+        bookdf2.loc[bookdf2[bookdf2.ISBN == bookdf.loc[bookdf.index[0],'ISBN']].index[0],'Stock'] = bookdf.loc[bookdf.index[0],'Stock'] - int(stock)
         bookdf2.to_csv("data/book.csv",index=False,sep=',')
+        booklist[0]['Stock'] -= int(stock)
         return booklist,0
     else:
         return booklist,2

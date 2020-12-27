@@ -1,7 +1,7 @@
 
 var bookInfoKey = ['Name', 'BookID', 'ISBN', 'Publisher', 'Date', 'Author', 'Tag','Stock']
-var bookInfoKeyScale = {'Name': "15%", 'BookID': "20%",
-    'ISBN': "10%", 'Publisher': "15%", 'Date': "10%",
+var bookInfoKeyScale = {'Name': "15%", 'BookID': "15%",
+    'ISBN': "10%", 'Publisher': "20%", 'Date': "10%",
     'Author': "10%", 'Tag': "10%",'Stock': "10%"}
 var userInfoKey = ['Name', 'UserID', 'Type', 'PhoneNumber']
 var userInfoKeyScale = {'Name': "25%", 'UserID': "25%",

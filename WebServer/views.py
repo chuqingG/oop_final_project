@@ -63,8 +63,8 @@ def del_user(request):
     uid = request.POST.get('uid')
     usertype = request.POST.get('usertype')
     phone = request.POST.get('phone')
-    userdf,flag = user.delUser(username,uid,usertype,phone)
-    return JsonResponse({'userdf': userdf,'flag':flag})
+    uname,userdf,flag = user.delUser(username,uid,usertype,phone)
+    return JsonResponse({'userdf': userdf,'flag':flag,'uname':uname})
 
 def mod_user(request):
     username = request.POST.get('username')
